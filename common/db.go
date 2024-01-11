@@ -21,7 +21,7 @@ func InitDb() error {
 		return errors.New("You must set your 'MONGODB_URI' env variable. See\n\t https...")
 	}
 
-	client, err := mongo.Connect(context.Background(), options.Client(), options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
 	if err != nil {
 		return err
 	}

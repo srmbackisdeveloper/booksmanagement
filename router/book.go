@@ -141,33 +141,31 @@ func updateBook(c *fiber.Ctx) error {
 }
 
 func deleteBook(c *fiber.Ctx) error {
-	coll := common.GetDbCollection("books")
-
-	// get the book id from the URL parameter
+	// get the id
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "id is required"})
+		return c.Status(400).JSON(fiber.Map{
+			"error": "id is required",
+		})
 	}
-
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "invalid id"})
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid id",
+		})
 	}
 
 	// delete the book
+	coll := common.GetDbCollection("books")
 	result, err := coll.DeleteOne(c.Context(), bson.M{"_id": objectId})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error":   "failed to delete book",
+			"error":   "Failed to delete book",
 			"message": err.Error(),
 		})
 	}
 
-	// check if the book was found and deleted
-	if result.DeletedCount == 0 {
-		return c.Status(404).JSON(fiber.Map{"error": "book not found"})
-	}
-
-	// return success response
-	return c.Status(200).JSON(fiber.Map{"message": "book successfully deleted"})
+	return c.Status(200).JSON(fiber.Map{
+		"result": result,
+	})
 }
